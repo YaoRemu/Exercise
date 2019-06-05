@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <nav class="navbar navbar-inverse">
+
+            <a class="navbar-brand" href="#">YaoZhao - 黍</a>
+
+        </nav>
+
+        <div class="jumbotron">
+            <h1>欢迎来到音乐 Top10 </h1>
+            <p style="margin-left:15px;">
+                睡梦中清醒 身体依然无法动弹<br>
+                大病初愈后 沦为普通人下之人<br>
+                给无价值之物 加上价值<br>
+                对于假装有价值观的商品 叫人怎么去购买<br>
+                世界喝醉了酒 不停不停地旋转 但是战斗机<br>
+                暴力和美言相互调和后<br>
+                伴随着高楼间的微风睡着 若是过了百年 请叫醒我<br>
+                在无法化尘归土的事物旁边睡着<br>
+                若是后院里的坚硬果实变得鲜红 请提醒我<br>
+                嘱咐微风去拜访这个夏天<br>
+                穿越天空 —— —— 秋田ひろむ<br>
+            </p>
+            <p><a class="btn btn-info btn-lg test" href="#" role="button">点我吧</a></p>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="bigBox" style="display: none;width: 400px;margin: 15px auto;">
+                <h1 align="center"></h1>
+                <img style="width: 90%;margin:15px 5%;box-sizing:border-box;box-shadow:10px 10px 30px rgb(145, 142, 142)"
+                    class="imgtitle" src="" alt="">
+            </div>
+        </div>
+
+        <ul class="box">
+
+        </ul>
+
+        <nav class="navbar navbar-default navbar-bottom  navbar-inverse">
+
+                    <a class="navbar-brand" href="#">
+                            <span class="label label-success">黍</span>
+                    </a>
+ 
+        </nav>
+
+
+
+
+
+    </div>
+
+
+
+</body>
+
+
+</html>
+
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
+
+<script src="https://unpkg.com/art-template@4.13.2/lib/template-web.js"></script>
+<script type="html/text" id="template">
+    {{each}}
+        <li class="musicBox list-group-item" >
+            <h3 align="center">{{$value.name}}</h3>
+            <p align="center">歌手：{{$value.ar[0].name}}</p>
+            <p align="center" style="margin-bottom:40px;">专辑：{{$value.al.name}}</p>
+            <div style="width:60%;margin-left:20%;">
+            <img style="width: 100px;box-sizing:border-box;border: 2px solid skyblue" src="{{$value.al.picUrl}}">
+            <audio class="aud" style="display: inline-block;width:480px;margin:-12px 20px;" 
+            src="" controls="controls"></audio>
+            </div>
+        </li>
+    {{/each}}
+</script>
+
+<script>
+    $(function () {
+        // https://music.163.com/playlist?id=547408948&userid=385925824
+
+        $(".test").click(function () {
+            // 
+            $.ajax({
+                url: 'https://api.imjad.cn/cloudmusic/',
+                data: {
+                    type: 'playlist',
+                    id: '547408948',
+                },
+                success: function (data) {
+                    console.log(data.playlist);
+                    // console.log(data.playlist.tracks[0].id);
+                    // console.log(data.playlist.creator.avatarUrl);
+                    // console.log(data.playlist.tracks[0].id);
+
+                    console.log(data.playlist.tracks);
+                    // console.log("歌曲："+data.playlist.tracks[0].name);
+                    // console.log("歌手："+data.playlist.tracks[0].ar[0].name);
+                    // console.log("专辑："+data.playlist.tracks[0].al.name);
+                    // console.log("封面："+data.playlist.tracks[0].al.picUrl);
+
+
+                    musicId = data.playlist.tracks[0].id;
+                    $(".bigBox").css("display", "block");
+                    $("h1").html(data.playlist.name)
+                    $(".imgtitle").attr("src", data.playlist.creator.avatarUrl)
+
+                    // $("h3").html("歌曲：" + data.playlist.tracks[0].name)
+
+                    var result = template('template', data.playlist.tracks);
+                    // console.log(result);
+                    $(".box").append(result)
+
+                    var publicData = data.playlist.tracks;
+                    // 外面拿到id后 去里面遍历每一首音乐 
+
+
+                    // 获取音乐
+
+                    $.each(publicData, function (index, ele) {
+                        // console.log(publicData[index].id)
+                        var dataId = publicData[index].id;
+                        $.ajax({
+                            // https://music.163.com/song?id=570333140&userid=385925824
+                            url: 'https://api.imjad.cn/cloudmusic/',
+                            data: {
+                                type: '1',
+                                id: dataId
+                            },
+                            success: function (data) {
+                                console.log(data.data[0].url);
+                                // console.log(x[index]);
+                                // x[index].setAttrbute('src',data.data[0].url);
+                                $(".aud").eq(index).attr('src', data.data[0].url);
+
+                            }
+                        })
+
+                    })
+
+
+
+
+
+
+
+
+
+
+                }
+            })
+
+
+        })
+
+
+
+
+
+    })
+</script>
